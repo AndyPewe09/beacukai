@@ -20,7 +20,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author abel
  */
-public class home extends javax.swing.JFrame {
+public class home extends javax.swing.JFrame implements Statistic{
 
     /**
      * Creates new form home
@@ -47,6 +47,7 @@ public class home extends javax.swing.JFrame {
     }
     
     private Statement stm;
+    private ResultSet rs;
     
     public home() {
         initComponents();
@@ -69,10 +70,36 @@ public class home extends javax.swing.JFrame {
     
     private  void database() {
         try {
-            // LIFETIME
-            // LIFETIME
+            Calendar calendar = Calendar.getInstance();
+            int week = calendar.get(Calendar.WEEK_OF_MONTH);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            int year = calendar.get(Calendar.YEAR);
+            
+            String idTahun = "" + year;
+            String idBulan = month + "" + year;
+            String idMinggu = week + "" + month + "" + year;
+            
+            this.lifeTimeStatistic();
+  
+            this.yearlyStatistic(idTahun);
+            
+            this.monthlyStatistic(idBulan);
+            
+            this.weeklyStatistic(idMinggu); 
+            
+        }
+        catch (Exception e) {
+            if(e.getMessage() != null){
+                JOptionPane.showMessageDialog(null, "On Select 2 :" + e.getMessage());
+            }
+        }
+    }
+    
+    @Override
+    public void lifeTimeStatistic() {
+        try {
             String query = "SELECT SUM(jumlahBarang) FROM sitaan";
-            ResultSet rs = stm.executeQuery(query);
+            rs = stm.executeQuery(query);
             if(rs.next()){
                 totalIm2.setText(rs.getObject(1).toString());
             }
@@ -95,17 +122,57 @@ public class home extends javax.swing.JFrame {
                 totalIm.setText(rs.getObject(1).toString());
             }
             
-            // MONTHLY
-            Calendar calendar = Calendar.getInstance();
-            int week = calendar.get(Calendar.WEEK_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH) + 1;
-            int year = calendar.get(Calendar.YEAR);
+            rs = stm.executeQuery(query2);
+            if(rs.next()){
+                totalEx.setText(rs.getObject(1).toString());
+            }
+            
+            rs = stm.executeQuery(query3);
+            if(rs.next()){
+                totalIm.setText(rs.getObject(1).toString());
+            }  
+        } catch (Exception e) {
+            System.out.println("Error found @lifeTimeStatistic : " + e.getMessage());
+        }
+    }
 
-            String idBulan = month + "" + year;
-            String idTahun = "" + year;
+    @Override
+    public void yearlyStatistic(String idTahun) {
+        try {
+            String query8 = "SELECT SUM(jumlahBarang) FROM importeksport WHERE jenis='IMPORT BARANG' AND minggu LIKE'%" + idTahun + "';";
+            rs = stm.executeQuery(query8);
+            if(rs.next()){
+                if(rs.getObject(1) != null){
+                    totalIm4.setText(rs.getObject(1).toString());
+                }else {
+                    System.out.println("Total Export Yearly is empty");
+                }
+            }
             
-            System.out.println(idBulan);
+            String query9 = "SELECT SUM(jumlahBarang) FROM importeksport WHERE jenis='EKSPORT BARANG' AND minggu LIKE'%" + idTahun + "';";
+            rs = stm.executeQuery(query9);
+            if(rs.next()){
+                if(rs.getObject(1) != null){
+                    totalEx1.setText(rs.getObject(1).toString());
+                }else {
+                    System.out.println("Total Export Yearly is empty");
+                }
+            }
+//          TOTAL YEARLY
+            int i1 = Integer.parseInt(totalEx1.getText());
+            int j1 = Integer.parseInt(totalIm4.getText());           
             
+            int total1 = i1 + j1;
+                        
+            totalIm3.setText(total1 + "");
+        } catch (Exception e) {
+            System.out.println("Error found @lifeTimeStatistic : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void monthlyStatistic(String idBulan) {
+        try {
             String query6 = "SELECT SUM(jumlahBarang) FROM importeksport WHERE jenis='IMPORT BARANG' AND minggu LIKE'%" + idBulan + "';";
             rs = stm.executeQuery(query6);
             if(rs.next()){
@@ -133,46 +200,14 @@ public class home extends javax.swing.JFrame {
             int total2 = i2 + j2;
                         
             totalIm5.setText(total2 + "");
-            
-            rs = stm.executeQuery(query2);
-            if(rs.next()){
-                totalEx.setText(rs.getObject(1).toString());
-            }
-  
-            // YEARLY
-            String query8 = "SELECT SUM(jumlahBarang) FROM importeksport WHERE jenis='IMPORT BARANG' AND minggu LIKE'%" + idTahun + "';";
-            rs = stm.executeQuery(query8);
-            if(rs.next()){
-                if(rs.getObject(1) != null){
-                    totalIm4.setText(rs.getObject(1).toString());
-                }else {
-                    System.out.println("Total Export Yearly is empty");
-                }
-            }
-            
-            String query9 = "SELECT SUM(jumlahBarang) FROM importeksport WHERE jenis='EKSPORT BARANG' AND minggu LIKE'%" + idTahun + "';";
-            rs = stm.executeQuery(query9);
-            if(rs.next()){
-                if(rs.getObject(1) != null){
-                    totalEx1.setText(rs.getObject(1).toString());
-                }else {
-                    System.out.println("Total Export Yearly is empty");
-                }
-            }
-//          TOTAL YEARLY
-            int i1 = Integer.parseInt(totalEx1.getText());
-            int j1 = Integer.parseInt(totalIm4.getText());           
-            
-            int total1 = i1 + j1;
-                        
-            totalIm3.setText(total1 + "");
+        } catch (Exception e) {
+            System.out.println("Error found @monthlyStatistic : " + e.getMessage());
+        }
+    }
 
-            
-            // WEEKLY
-            //String query4 = "SELECT importeksport, sum(case when date >= dateadd(week, datediff(week, 0, sysdatetime()), 0) and date < dateadd(week, datediff(week, 0, sysdatetime()) + 1, 0) then 1 else 0 end);";
-
-            String idMinggu = week + "" + month + "" + year;
-            System.out.println(idMinggu);
+    @Override
+    public void weeklyStatistic(String idMinggu) {
+        try {
             
             String query4 = "SELECT SUM(jumlahBarang) FROM importeksport WHERE jenis='IMPORT BARANG' AND minggu='" + idMinggu + "';";
             rs = stm.executeQuery(query4);
@@ -197,26 +232,11 @@ public class home extends javax.swing.JFrame {
             int total = i + j;
                         
             totalIm9.setText(total + "");
-            
-            rs = stm.executeQuery(query2);
-            if(rs.next()){
-                totalEx.setText(rs.getObject(1).toString());
-            }
-            
-            rs = stm.executeQuery(query3);
-            if(rs.next()){
-                totalIm.setText(rs.getObject(1).toString());
-            }   
-            
-            
-        }
-        catch (Exception e) {
-            if(e.getMessage() != null){
-                JOptionPane.showMessageDialog(null, "On Select 2 :" + e.getMessage());
-            }
+        } catch (Exception e) {
+            System.out.println("Error found @weeklyStatistic : " + e.getMessage());
         }
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
