@@ -59,16 +59,16 @@ public class Table extends javax.swing.JFrame {
     }
 
     private  void selectData(String search) {
+        ImportExport ie = new ImportExport(search);
+        ie.fetchData();
+        ResultSet rs = ie.getImportExport();
         try {
-            String query = "SELECT * FROM importeksport where `tanggal` Like '%" + search +"%' or `jenis` Like '%" + search +"%' or `KodeBarang` Like '%" + search +"%' or `NamaBarang` Like '%" + search +"%' or `JumlahBarang` Like '%" + search +"%' or `JumlahMaksimal` Like '%" + search +"%' or `HargaBarang` Like '%" + search +"%' or `PajakPerBarang` Like '%" + search +"%' or `PajakTotal` Like '%" + search +"%' or `NamaPengirim` Like '%" + search +"%' or `AsalNegara` Like '%" + search +"%' or `KotaTujuan` Like '%" + search +"%' or `NegaraTujuan` Like '%" + search +"%'";
-            ResultSet rs = stm.executeQuery(query);
-            
             while(rs.next()) {
                 this.insertTable(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13));
             }
         }
         catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "On Select :" + e.getMessage());
+            System.out.println("Error Found @selectData : " + e.getMessage());
         }
     }
     

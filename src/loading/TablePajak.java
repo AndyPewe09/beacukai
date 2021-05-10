@@ -38,25 +38,23 @@ public class TablePajak extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "On Start : " + e.getMessage());
         }
     }
+
+    private  void selectData(String search) {
+        Sitaan sita = new Sitaan(search);
+        sita.fetchData();
+        ResultSet rs = sita.getSitaan();
+        try {
+            while(rs.next()) {
+                this.insertTable(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13));
+            }    
+        } catch (Exception e) {
+            System.out.println("Error Found @selectData : " + e.getMessage());
+        }
+    }
     
     private void insertTable(String Tanggal, String JenisInputan, String KodeBarang, String NamaBarang, String JumlahBarang, String JumlahMaksimum, String HargaBarang, String PajakPerBarang, String PajakTotal, String NamaPengirim, String AsalNegara, String KotaTujuan, String NegaraTujuan) {
         DefaultTableModel model = (DefaultTableModel) tbData.getModel();
-        
         model.addRow(new Object[]{Tanggal, JenisInputan, KodeBarang,NamaBarang, JumlahBarang, JumlahMaksimum, HargaBarang, PajakPerBarang, PajakTotal, NamaPengirim, AsalNegara, KotaTujuan, NegaraTujuan});
-    }
-
-    private  void selectData(String search) {
-        try {
-            String query = "SELECT * FROM sitaan where `jenis` Like '%" + search +"%' or `KodeBarang` Like '%" + search +"%' or `NamaBarang` Like '%" + search +"%' or `JumlahBarang` Like '%" + search +"%' or `JumlahMaksimal` Like '%" + search +"%' or `HargaBarang` Like '%" + search +"%' or `PajakPerBarang` Like '%" + search +"%' or `PajakTotal` Like '%" + search +"%' or `NamaPengirim` Like '%" + search +"%' or `AsalNegara` Like '%" + search +"%' or `KotaTujuan` Like '%" + search +"%' or `NegaraTujuan` Like '%" + search +"%'";
-            ResultSet rs = stm.executeQuery(query);
-            
-            while(rs.next()) {
-                this.insertTable(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12), rs.getString(13));
-            }
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "On Select :" + e.getMessage());
-        }
     }
 
     /**
