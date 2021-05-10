@@ -26,8 +26,6 @@ public class home extends javax.swing.JFrame {
      * Creates new form home
      */
     
-    
-    
     public static class DateUtils {
         public static final String DATE_FORMAT_NOW = "dd";
 
